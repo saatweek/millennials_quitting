@@ -1,0 +1,105 @@
+---
+title: "Employee Attrition Codes"
+author: "Satwik"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Code
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+```
+
+
+```{r}
+# Reading the dataset and chekcing dimensions
+df <- read.csv('data/WA_Fn-UseC_-HR-Employee-Attrition.csv')
+dim(df)
+df <- subset(df, select = -c(EmployeeCount, Over18, Gender, StandardHours, Department, MaritalStatus, EmployeeNumber, BusinessTravel, DailyRate, DistanceFromHome, EducationField, HourlyRate, MonthlyRate, StockOptionLevel, PerformanceRating, TrainingTimesLastYear, JobRole, YearsWithCurrManager, YearsSinceLastPromotion, YearsAtCompany, YearsInCurrentRole, TotalWorkingYears))
+dim(df)
+
+df %>% summarise_all(n_distinct)
+```
+
+```{r}
+sample_n(df, 5)
+```
+```{r}
+df <- mutate(df, gen = cut(Age,
+                     c(-Inf, 23, 38, 54, Inf), 
+                     c('gen_z', 'millennial', 'gen_x', 'boomers')))
+df <- df %>% 
+  mutate( OverTime = ifelse(OverTime=="Yes", 1, 0 ))
+df %>% group_by(gen) %>% 
+  summarise(avg_Education = median(Education), 
+            avg_EnvironmentSatisfaction = median(EnvironmentSatisfaction),
+            avg_JobInvolvement = median(JobInvolvement))
+df %>% group_by(gen) %>% 
+  summarise(
+            avg_JobLevel = median(JobLevel),
+            avg_JobSatisfaction = median(JobSatisfaction),
+            count_OverTime = sum(OverTime))
+df %>% group_by(gen) %>% 
+  summarise(
+            avg_MonthlyIncome = median(MonthlyIncome),
+            avg_NumCompaniesWorked = median(NumCompaniesWorked),
+            avg_PercentSalaryHike = median(PercentSalaryHike))
+df %>% group_by(gen) %>% 
+  summarise(
+            avg_RelationshipSatisfaction = median(RelationshipSatisfaction),
+            avg_WorkLifeBalance = median(WorkLifeBalance),
+            )
+```
+
+
+```{r}
+# Since our outcome variable is attrition, and the predictor of interest is age, let's focus on these two before we check other potential confounding variable
+
+df$Attrition <- factor(df$Attrition)
+
+count_attr <- df %>%
+    group_by(Age) %>%
+    summarize(count_n = n(),
+              attr_count = sum(Attrition=="Yes"))
+
+count_attr$prop <- count_attr$attr_count/count_attr$count_n
+count_attr[order(-count_attr$prop), ]
+
+count_attr <- count_attr %>% 
+  mutate( Millennial = ifelse((Age >=23 & Age <= 38), "yes", "no" ))
+
+ggplot(count_attr, aes(x = Age, y = prop, fill = Millennial)) + 
+  geom_col() + 
+  theme_minimal() + 
+  ggtitle("Propotion of People Leaving (By Age group)") + 
+  xlab("Age") + 
+  ylab("Proportion") + 
+  scale_fill_manual(values = c("yes"="tomato", "no"="gray"))
+```
+
+
+
+```{r}
+colnames(df)
+```
+
+
+```{r}
+ggplot(df, aes(Age)) + 
+  geom_histogram(aes(y =..density..), fill="grey", color="black") + 
+  theme_minimal() + 
+  stat_function(fun = dnorm, args = list(mean = mean(df$Age), sd = sd(df$Age))) + 
+  ggtitle("Distribution of Age") + 
+  xlab("Age") + 
+  ylab("Frequency")
+```
+
