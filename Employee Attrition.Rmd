@@ -3,8 +3,10 @@ title: "Are Millennials more likely to quit?"
 author: 'Satwik (Net ID : wh3517)'
 date: "`r Sys.Date()`"
 output:
-  pdf_document: default
+  md_document:
+    variant: markdown_github
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -17,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Anyone born between 1981 and 1996 (ages 23 to 38 as of 2019) is considered to be a **Millennial**. Here is a helpful chart to get a more visual distinction of the different generations we'll be dealing with, in this project.
 
-```{r, echo=F, fig.cap="Image Source : Pew Research Center [$^{[1]}$](https://www.pewresearch.org/fact-tank/2019/01/17/where-millennials-end-and-generation-z-begins/ft_19-01-17_generations_2019/)"}
+```{r, echo=F, fig.cap="Image Source : Pew Research Center $^{[1]}$"}
 knitr::include_graphics("img/FT_19.01.17_generations_2019.png")
 ```
 
