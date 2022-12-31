@@ -11,7 +11,7 @@ in this project.
 
 <img src="img/FT_19.01.17_generations_2019.png" alt="Image Source : Pew Research Center $^{[1]}$" width="1281" />
 <p class="caption">
-Image Source : Pew Research Center <sup>\[1\]</sup>
+Image Source : Pew Research Center <sup>[1]</sup>
 </p>
 
 The U.S. Bureau of Labor Statistics reported that the median age of US
